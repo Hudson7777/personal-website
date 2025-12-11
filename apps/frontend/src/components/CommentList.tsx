@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useAuthStore } from '@/stores/auth'
-import { Comment, CommentTree } from '@/services/commentService'
-import Button from './Button'
+import { CommentTree } from '@/services/commentService'
 import Avatar from './Avatar'
 
 interface CommentListProps {
@@ -43,7 +42,7 @@ export default function CommentList({
           {/* Author Info */}
           <div className="flex items-center gap-3 mb-3">
             <Avatar
-              src={comment.author.avatar}
+              src={comment.author.avatar || undefined}
               alt={comment.author.name}
               size="sm"
               fallback={comment.author.name.charAt(0)}

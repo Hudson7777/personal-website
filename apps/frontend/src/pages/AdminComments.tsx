@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import api from '@/lib/api'
 
 interface Comment {
   id: string
@@ -38,7 +37,7 @@ export default function AdminComments() {
     }
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (_id: string) => {
     if (!confirm('Are you sure you want to delete this comment?')) return
 
     try {
