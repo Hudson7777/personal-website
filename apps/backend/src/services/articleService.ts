@@ -69,7 +69,7 @@ export class ArticleService {
     ])
 
     return {
-      articles: articles.map(article => this.formatArticle(article)),
+      articles: articles.map((article: any) => this.formatArticle(article)),
       total,
       page,
       limit,
@@ -199,7 +199,7 @@ export class ArticleService {
       },
     })
 
-    return relatedArticles.map(a => this.formatArticle(a))
+    return relatedArticles.map((a: any) => this.formatArticle(a))
   }
 
   /**
