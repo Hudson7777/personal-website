@@ -205,7 +205,7 @@ export class ArticleService {
   /**
    * 格式化文章数据
    */
-  private formatArticle(article: any) {
+  private formatArticle(article: any): any {
     return {
       id: article.id,
       title: article.title,
