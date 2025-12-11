@@ -9,7 +9,6 @@
     "db:generate": "prisma generate"
   },
   "devDependencies": {
-    "@prisma/cli": "^5.7.1",
     "prisma": "^5.7.1"
   },
   "dependencies": {

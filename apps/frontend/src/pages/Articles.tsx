@@ -1,14 +1,26 @@
-export default function Articles() {
-  return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-4xl font-bold text-foreground mb-2">AI Articles</h1>
-        <p className="text-muted-foreground">Exploring artificial intelligence and machine learning</p>
-      </div>
+import { useArticles } from '@/hooks/useArticles'
+import Section from '@/components/Section'
+import Container from '@/components/Container'
+import ArticleGrid from '@/components/ArticleGrid'
 
-      <div className="space-y-4">
-        <p className="text-muted-foreground">No articles yet. Check back soon!</p>
-      </div>
+export default function Articles() {
+  const { articles, isLoading } = useArticles({ category: 'ai' })
+
+  return (
+    <div>
+      <Section
+        title="AI Articles"
+        subtitle="Exploring artificial intelligence and machine learning"
+        padding="lg"
+      >
+        <Container>
+          <ArticleGrid
+            articles={articles}
+            isLoading={isLoading}
+            emptyMessage="No AI articles yet. Check back soon!"
+          />
+        </Container>
+      </Section>
     </div>
   )
 }

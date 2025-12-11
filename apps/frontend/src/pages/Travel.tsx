@@ -1,14 +1,26 @@
-export default function Travel() {
-  return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-4xl font-bold text-foreground mb-2">Travel</h1>
-        <p className="text-muted-foreground">Adventures and insights from around the world</p>
-      </div>
+import { useArticles } from '@/hooks/useArticles'
+import Section from '@/components/Section'
+import Container from '@/components/Container'
+import ArticleGrid from '@/components/ArticleGrid'
 
-      <div className="space-y-4">
-        <p className="text-muted-foreground">No travel stories yet. Check back soon!</p>
-      </div>
+export default function Travel() {
+  const { articles, isLoading } = useArticles({ category: 'travel' })
+
+  return (
+    <div>
+      <Section
+        title="Travel"
+        subtitle="Adventures and insights from around the world"
+        padding="lg"
+      >
+        <Container>
+          <ArticleGrid
+            articles={articles}
+            isLoading={isLoading}
+            emptyMessage="No travel stories yet. Check back soon!"
+          />
+        </Container>
+      </Section>
     </div>
   )
 }
