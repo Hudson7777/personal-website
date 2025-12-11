@@ -1,0 +1,19 @@
+{
+  "name": "personal-website",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A modern personal website with content management system",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "type-check": "turbo run type-check",
+    "lint": "turbo run lint",
+    "db:push": "turbo run db:push --filter=backend",
+    "db:migrate": "turbo run db:migrate --filter=backend",
+    "db:studio": "turbo run db:studio --filter=backend"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.16"
+  },
+  "packageManager": "pnpm@8.0.0"
+}
