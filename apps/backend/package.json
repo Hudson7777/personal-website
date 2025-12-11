@@ -15,6 +15,7 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx src/scripts/seed.ts",
+    "db:init-admin": "tsx src/scripts/init-admin.ts",
     "db:init-production": "tsx src/scripts/init-production.ts"
   },
   "dependencies": {

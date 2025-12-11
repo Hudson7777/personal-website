@@ -1,12 +1,18 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { useArticle } from '@/hooks/useArticle'
 import { getRelatedArticles } from '@/data/mockArticles'
+import { commentService, CommentTree } from '@/services/commentService'
 import Container from '@/components/Container'
 import Section from '@/components/Section'
 import Avatar from '@/components/Avatar'
 import Badge from '@/components/Badge'
 import ArticleGrid from '@/components/ArticleGrid'
 import Button from '@/components/Button'
+import CommentList from '@/components/CommentList'
+import CommentForm from '@/components/CommentForm'
+import CommentEditor from '@/components/CommentEditor'
+import SEO from '@/components/SEO'
 
 export default function ArticleDetail() {
   const { id } = useParams<{ id: string }>()
@@ -14,11 +20,73 @@ export default function ArticleDetail() {
   const { article, isLoading, error } = useArticle(id)
   const relatedArticles = article ? getRelatedArticles(article.id, 3) : []
 
+  // Comments state
+  const [comments, setComments] = useState<CommentTree[]>([])
+  const [commentsLoading, setCommentsLoading] = useState(false)
+  const [replyingTo, setReplyingTo] = useState<{ id: string; author: string } | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingContent, setEditingContent] = useState('')
+
   const categoryColors: Record<string, string> = {
     ai: 'primary',
     travel: 'success',
     photography: 'warning',
     history: 'error',
+  }
+
+  // Load comments
+  useEffect(() => {
+    if (article?.id) {
+      loadComments()
+    }
+  }, [article?.id])
+
+  const loadComments = async () => {
+    if (!article?.id) return
+    try {
+      setCommentsLoading(true)
+      const data = await commentService.getComments(article.id)
+      setComments(data)
+    } catch (error) {
+      console.error('Failed to load comments:', error)
+    } finally {
+      setCommentsLoading(false)
+    }
+  }
+
+  const handleCreateComment = async (content: string) => {
+    if (!article?.id) return
+    try {
+      await commentService.createComment(article.id, content, replyingTo?.id)
+      await loadComments()
+      setReplyingTo(null)
+    } catch (error) {
+      console.error('Failed to create comment:', error)
+      throw error
+    }
+  }
+
+  const handleEditComment = async (content: string) => {
+    if (!article?.id || !editingId) return
+    try {
+      await commentService.updateComment(article.id, editingId, content)
+      await loadComments()
+      setEditingId(null)
+    } catch (error) {
+      console.error('Failed to update comment:', error)
+      throw error
+    }
+  }
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!article?.id) return
+    if (!confirm('Are you sure you want to delete this comment?')) return
+    try {
+      await commentService.deleteComment(article.id, commentId)
+      await loadComments()
+    } catch (error) {
+      console.error('Failed to delete comment:', error)
+    }
   }
 
   if (isLoading) {
@@ -49,6 +117,17 @@ export default function ArticleDetail() {
 
   return (
     <div>
+      <SEO
+        title={article.title}
+        description={article.excerpt || article.content.substring(0, 160)}
+        image={article.coverImage}
+        url={`/articles/${article.id}`}
+        type="article"
+        author={article.author.name}
+        publishedDate={article.createdAt}
+        modifiedDate={article.updatedAt}
+      />
+
       {/* Cover Image */}
       <div
         className="h-96 bg-cover bg-center relative"
@@ -138,6 +217,45 @@ export default function ArticleDetail() {
               </Link>
             </div>
           </article>
+        </Container>
+      </Section>
+
+      {/* Comments Section */}
+      <Section padding="lg" className="bg-card/30">
+        <Container size="sm">
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-2">Comments</h2>
+            <p className="text-muted-foreground">Join the discussion</p>
+          </div>
+
+          {/* Comment Form */}
+          <div className="mb-12">
+            <CommentForm
+              onSubmit={handleCreateComment}
+              replyingTo={replyingTo || undefined}
+              onCancelReply={() => setReplyingTo(null)}
+            />
+          </div>
+
+          {/* Comments List */}
+          {editingId ? (
+            <CommentEditor
+              initialContent={editingContent}
+              onSave={handleEditComment}
+              onCancel={() => setEditingId(null)}
+            />
+          ) : (
+            <CommentList
+              comments={comments}
+              onReply={(parentId, parentAuthor) => setReplyingTo({ id: parentId, author: parentAuthor })}
+              onEdit={(commentId, content) => {
+                setEditingId(commentId)
+                setEditingContent(content)
+              }}
+              onDelete={handleDeleteComment}
+              isLoading={commentsLoading}
+            />
+          )}
         </Container>
       </Section>
 

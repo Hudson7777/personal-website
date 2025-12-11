@@ -7,13 +7,13 @@ export interface TokenPayload {
 
 export const generateAccessToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, process.env.JWT_SECRET || 'secret', {
-    expiresIn: '15m',
+    expiresIn: process.env.JWT_EXPIRES_IN || '30m',
   })
 }
 
 export const generateRefreshToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET || 'refresh-secret', {
-    expiresIn: '7d',
+    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '90d',
   })
 }
 

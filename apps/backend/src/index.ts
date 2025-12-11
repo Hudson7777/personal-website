@@ -6,9 +6,11 @@ import { PrismaClient } from '@prisma/client'
 import { sendError } from './utils/response'
 import { AppError } from './utils/errors'
 import articlesRouter from './routes/articles'
+import authRouter from './routes/auth'
 import categoriesRouter from './routes/categories'
 import tagsRouter from './routes/tags'
 import uploadRouter from './routes/upload'
+import seoRouter from './routes/seo'
 
 dotenv.config()
 
@@ -36,6 +38,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Static files serving
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')))
+app.use(express.static(path.join(process.cwd(), 'public')))
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {
@@ -43,14 +46,12 @@ app.get('/api/health', (req: Request, res: Response) => {
 })
 
 // Routes
+app.use('/api/auth', authRouter)
 app.use('/api/articles', articlesRouter)
 app.use('/api/categories', categoriesRouter)
 app.use('/api/tags', tagsRouter)
 app.use('/api/upload', uploadRouter)
-
-app.use('/api/auth', (req: Request, res: Response) => {
-  res.json({ message: 'Auth routes coming soon' })
-})
+app.use('/', seoRouter)
 
 // 404 handler
 app.use((req: Request, res: Response) => {

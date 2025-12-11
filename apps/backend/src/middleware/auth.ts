@@ -23,3 +23,18 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     return res.status(401).json({ message: 'Invalid token' })
   }
 }
+
+export const adminMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+  // First check if user is authenticated
+  if (!req.user) {
+    return res.status(401).json({ message: 'No token provided' })
+  }
+
+  // Check if user email is in admin list
+  const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(email => email.trim())
+  if (!adminEmails.includes(req.user.email)) {
+    return res.status(403).json({ message: 'Admin access required' })
+  }
+
+  return next()
+}

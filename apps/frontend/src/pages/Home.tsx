@@ -5,6 +5,7 @@ import Section from '@/components/Section'
 import Container from '@/components/Container'
 import LatestArticles from '@/components/LatestArticles'
 import InterestsSection from '@/components/InterestsSection'
+import SEO from '@/components/SEO'
 
 export default function Home() {
   const { profile, interests, isLoading: profileLoading } = useProfile()
@@ -30,6 +31,13 @@ export default function Home() {
 
   return (
     <div>
+      <SEO
+        title="Personal"
+        description="A personal website showcasing thoughts on AI, travel, photography, and history. Explore my journey and insights across multiple domains."
+        url="/"
+        type="website"
+      />
+
       {/* Hero Section */}
       <Hero profile={profile} />
 

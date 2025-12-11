@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { articleController } from '../controllers/articleController'
+import commentsRouter from './comments'
 
 const router = Router()
 
@@ -12,6 +13,9 @@ router.get('/', articleController.getArticles.bind(articleController))
 
 // 获取相关文章
 router.get('/:id/related', articleController.getRelatedArticles.bind(articleController))
+
+// 评论路由
+router.use('/:articleId/comments', commentsRouter)
 
 // 获取单篇文章
 router.get('/:id', articleController.getArticleById.bind(articleController))

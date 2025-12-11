@@ -7,9 +7,9 @@ const api = axios.create({
 
 // Add token to requests
 api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().token
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  const accessToken = useAuthStore.getState().accessToken
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
   }
   return config
 })
@@ -22,11 +22,12 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
       try {
-        const response = await axios.post('/api/auth/refresh')
-        const { token } = response.data
-        useAuthStore.getState().setToken(token)
-        originalRequest.headers.Authorization = `Bearer ${token}`
-        return api(originalRequest)
+        await useAuthStore.getState().refreshAccessToken()
+        const newAccessToken = useAuthStore.getState().accessToken
+        if (newAccessToken) {
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+          return api(originalRequest)
+        }
       } catch {
         useAuthStore.getState().logout()
       }

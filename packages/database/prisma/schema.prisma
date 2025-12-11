@@ -52,9 +52,13 @@ model Comment {
   authorId  String
   article   Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
   articleId String
+  parentId  String?    // For nested replies
+  parent    Comment?   @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[]  @relation("CommentReplies")
 
   @@index([authorId])
   @@index([articleId])
+  @@index([parentId])
 }
 
 model Category {
