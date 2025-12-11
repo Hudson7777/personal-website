@@ -165,7 +165,9 @@ pnpm lint
 ## 🔄 数据流
 
 ```
-Mock Data (mockArticles.ts, mockProfile.ts)
+后端 API (http://localhost:3001/api)
+    ↓
+Axios 实例 (lib/api.ts)
     ↓
 Services (articleService.ts, profileService.ts)
     ↓
@@ -176,30 +178,49 @@ Components (ArticleCard.tsx, ArticleGrid.tsx, etc.)
 Pages (Home.tsx, Articles.tsx, ArticleDetail.tsx, etc.)
 ```
 
-## 🔌 API 集成准备
+## 🔌 API 集成
 
-所有数据服务都已准备好与后端 API 集成。只需在 `services/` 目录下的服务文件中替换 Mock 数据调用为真实 API 调用：
+前端已完全集成真实后端 API，使用 Axios 进行 HTTP 请求。
+
+### 配置
+- **API 基础 URL**: `/api`（开发环境）或 `https://your-backend-url/api`（生产环境）
+- **HTTP 客户端**: Axios
+- **认证**: JWT Token（通过 Authorization header）
+- **拦截器**: 自动添加 token，处理 401 错误
+
+### 支持的功能
+- ✅ 文章列表（支持分页、分类筛选、排序）
+- ✅ 单篇文章查询
+- ✅ 相关文章推荐
+- ✅ 分类和标签管理
+- ✅ 文件上传
+
+### 配置生产环境 API 地址
+
+编辑 `src/lib/api.ts`：
 
 ```typescript
-// 当前（Mock 数据）
-await new Promise(resolve => setTimeout(resolve, 300))
-return Promise.resolve(mockArticles)
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+})
+```
 
-// 替换为（真实 API）
-const response = await fetch(`${this.baseUrl}/articles`)
-return response.json()
+或在 `.env` 中配置：
+
+```
+VITE_API_URL=https://your-backend-url/api
 ```
 
 ## 🎯 未来改进
 
 - [ ] 搜索功能
-- [ ] 文章筛选和排序
 - [ ] 评论系统
-- [ ] 用户认证
+- [ ] 用户认证和登录
 - [ ] 后台管理系统
 - [ ] 深色模式切换
 - [ ] 国际化支持
 - [ ] SEO 优化
+- [ ] 性能优化（代码分割、图片优化）
 
 ## 📦 依赖
 
