@@ -2,294 +2,218 @@
 
 一个现代化的个人主页网站，用于分享 AI 文章、旅游见闻、摄影作品和历史内容。
 
-**状态**: ✅ MVP 完成 | 🚀 准备部署
+**状态**: ✅ 功能完整 | 🟢 本地可用 | 🚀 待云端部署
 
 ## 🎯 项目概述
 
-这是一个全栈 Monorepo 项目，包含前端、后端和共享包。采用 MVC 架构，提供完整的内容管理系统。
+全栈 Monorepo 项目，React 前端 + Express 后端 + Neon PostgreSQL。提供完整的内容管理后台，支持富文本写作、图片上传、评论审核、全站搜索。
 
 ### 核心功能
 
-- **个人介绍展示**: 首页展示个人概况和兴趣爱好
-- **多分类内容管理**: AI 文章、旅游、摄影、历史四大分类
-- **文章 CRUD 操作**: 完整的创建、读取、更新、删除功能
-- **分类和标签管理**: 灵活的内容分类和标签系统
-- **文件上传**: 支持图片上传和管理（本地存储）
-- **分页和筛选**: 文章列表支持分页、分类筛选、排序
-- **相关文章推荐**: 自动推荐相关文章
-- **响应式设计**: 现代、简洁、美观的 UI
-- **类型安全**: 完整的 TypeScript 支持
-- **数据验证**: 使用 Zod 进行请求数据验证
+**公开页面**
+- 首页：个人介绍 Hero + 最新文章 + 兴趣爱好 + 关于我
+- 四大内容分类：AI 文章 / 旅游 / 摄影 / 历史
+- 文章详情：富文本内容、标签、相关文章推荐、嵌套评论
+- 全站搜索（`/search`）
+- 响应式设计，支持移动端
+
+**管理后台** (`/admin`)
+- 文章编辑器：TipTap 富文本，支持图片上传、标签、分类、草稿/发布
+- 评论管理：查看全部评论、一键删除、分页
+- 数据统计：文章数 / 评论数 / 分类数
 
 ## 🏗️ 项目结构
 
 ```
 personal-website/
 ├── apps/
-│   ├── frontend/          # React 前端应用
-│   │   ├── src/
-│   │   ├── public/
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   ├── vite.config.ts
-│   │   └── tailwind.config.js
-│   └── backend/           # Express 后端应用
-│       ├── src/
-│       ├── prisma/
-│       ├── package.json
-│       └── tsconfig.json
+│   ├── frontend/          # React 18 + Vite 前端
+│   └── backend/           # Express + TypeScript 后端
+│       └── src/
+│           ├── controllers/
+│           ├── lib/         # 共享 Prisma 实例
+│           ├── middleware/
+│           ├── routes/
+│           ├── schemas/
+│           ├── services/
+│           └── utils/
 ├── packages/
-│   ├── shared/            # 共享类型和工具
-│   │   ├── src/
-│   │   ├── package.json
-│   │   └── tsconfig.json
-│   └── database/          # Prisma 数据库配置
-│       ├── prisma/
-│       └── package.json
-├── .github/
-│   └── workflows/         # CI/CD 工作流
+│   ├── shared/            # 共享类型和常量
+│   └── database/          # Prisma schema（PostgreSQL）
 ├── turbo.json
 ├── pnpm-workspace.yaml
-├── package.json
-└── README.md
+└── package.json
 ```
 
 ## 🛠️ 技术栈
 
 ### 前端
 - **框架**: React 18 + TypeScript
-- **样式**: Tailwind CSS + Shadcn/ui
+- **样式**: Tailwind CSS（莫奈哑光绿主题）
 - **编辑器**: TipTap 富文本编辑器
 - **状态管理**: Zustand
 - **构建工具**: Vite
-- **HTTP 客户端**: Axios
+- **安全**: DOMPurify（XSS 防护）
 
 ### 后端
 - **框架**: Express + TypeScript
-- **数据库**: SQLite（本地开发）/ PostgreSQL（生产环境）
+- **数据库**: Neon PostgreSQL（免费 Serverless）
 - **ORM**: Prisma
+- **认证**: JWT（access token 30min + refresh token 90d）
+- **安全**: Helmet + express-rate-limit
 - **文件上传**: Multer
 - **数据验证**: Zod
-- **架构**: MVC（Model-View-Controller）
-- **错误处理**: 统一的错误处理和响应格式
 
-### 共享
-- **类型定义**: TypeScript interfaces
-- **工具函数**: 通用工具库
-
-### 部署
-- **前端**: Vercel
-- **后端**: Railway
-- **数据库**: Railway PostgreSQL
+### 部署（规划）
+- **前端**: Vercel（免费）
+- **后端**: Render（免费）
+- **数据库**: Neon（免费，永不休眠）
 
 ## 📦 快速开始
 
 ### 前置要求
 - Node.js >= 18
 - pnpm >= 8.0.0
+- Neon 数据库账号（[neon.tech](https://neon.tech) 免费注册）
 
-### 安装依赖
+### 1. 安装依赖
 
 ```bash
 pnpm install
 ```
 
-### 开发模式
+### 2. 配置环境变量
+
+复制并填写后端配置：
 
 ```bash
-# 启动所有应用
-pnpm dev
-
-# 启动特定应用
-pnpm dev --filter=frontend
-pnpm dev --filter=backend
+cp apps/backend/.env.example apps/backend/.env
 ```
 
-### 数据库操作
+`.env` 必填项：
+
+```env
+DATABASE_URL="postgresql://..."   # 从 Neon 复制连接字符串
+JWT_SECRET="your-random-secret"
+JWT_REFRESH_SECRET="your-random-secret-2"
+ADMIN_EMAILS="your@email.com"
+ADMIN_PASSWORD="your-password"
+```
+
+前端 `.env`（本地开发留空，走 Vite proxy）：
+
+```env
+# 本地开发不需要设置 VITE_API_URL
+# 生产部署时设置: VITE_API_URL=https://your-backend.onrender.com/api
+```
+
+### 3. 初始化数据库
 
 ```bash
-# 推送 Schema 到数据库
+# 创建所有表
 pnpm db:push
 
-# 运行迁移
-pnpm db:migrate
-
-# 打开 Prisma Studio
-pnpm db:studio
+# 创建管理员账号
+pnpm --filter=backend db:init-admin
 ```
 
-### 构建
+### 4. 启动开发服务器
 
 ```bash
-pnpm build
-```
-
-### 类型检查
-
-```bash
-pnpm type-check
-```
-
-### Lint
-
-```bash
-pnpm lint
-```
-
-## 📝 开发流程
-
-1. 修改代码
-2. 运行 `pnpm type-check` 检查类型
-3. 运行 `pnpm lint` 检查代码风格
-4. 提交代码
-
-## 🚀 部署
-
-### 快速部署指南
-
-详见 [QUICK_START_DEPLOYMENT.md](./QUICK_START_DEPLOYMENT.md) - 5 分钟快速部署到 Railway
-
-### 详细部署指南
-
-- [完整部署指南](./DEPLOYMENT.md) - 详细的部署步骤和配置说明
-- [部署检查清单](./DEPLOYMENT_CHECKLIST.md) - 部署前后的检查项
-
-### 部署架构
-
-```
-GitHub (MVP 分支)
-    ↓
-Railway CI/CD
-    ├── PostgreSQL 数据库
-    └── Node.js 后端 (apps/backend)
-
-前端 (本地开发或 Vercel)
-    └── React 应用 (apps/frontend)
-```
-
-## 📚 文档
-
-### 项目文档
-- [项目总结](./PROJECT_SUMMARY.md) - 完整的项目概览和统计
-- [快速开始部署](./QUICK_START_DEPLOYMENT.md) - 5 分钟快速部署
-- [详细部署指南](./DEPLOYMENT.md) - 完整的部署步骤
-- [部署检查清单](./DEPLOYMENT_CHECKLIST.md) - 部署检查项
-
-### 应用文档
-- [前端开发指南](./apps/frontend/README.md)
-- [后端开发指南](./apps/backend/README.md)
-- [共享包文档](./packages/shared/README.md)
-
-### API 文档
-
-#### 文章 API
-```
-GET    /api/articles              # 获取文章列表（支持分页、筛选）
-GET    /api/articles/:id          # 获取单篇文章
-GET    /api/articles/:id/related  # 获取相关文章
-POST   /api/articles              # 创建文章
-PUT    /api/articles/:id          # 更新文章
-DELETE /api/articles/:id          # 删除文章
-```
-
-#### 分类 API
-```
-GET    /api/categories            # 获取所有分类
-POST   /api/categories            # 创建分类
-PUT    /api/categories/:id        # 更新分类
-DELETE /api/categories/:id        # 删除分类
-```
-
-#### 标签 API
-```
-GET    /api/tags                  # 获取所有标签
-POST   /api/tags                  # 创建标签
-PUT    /api/tags/:id              # 更新标签
-DELETE /api/tags/:id              # 删除标签
-```
-
-#### 文件上传 API
-```
-POST   /api/upload                # 上传单个文件
-POST   /api/upload/multiple       # 上传多个文件
-DELETE /api/upload/:filename      # 删除文件
-```
-
-## 💡 开发指南
-
-### 本地开发
-
-```bash
-# 1. 安装依赖
-pnpm install
-
-# 2. 启动开发服务器
 pnpm dev
-
 # 前端: http://localhost:5173
 # 后端: http://localhost:3001
 ```
 
-### 数据库操作
+### 5. 登录管理后台
 
-```bash
-# 初始化数据库
-pnpm db:push
+访问 `http://localhost:5173/admin/login`，使用 `.env` 中配置的邮箱和密码登录。
 
-# 初始化测试数据
-pnpm db:seed
+## 🔑 API 文档
 
-# 打开 Prisma Studio
-pnpm db:studio
+### 认证
+```
+POST   /api/auth/login           # 登录
+POST   /api/auth/refresh         # 刷新 token
+GET    /api/auth/me              # 获取当前用户信息
+PUT    /api/auth/profile         # 更新个人资料
 ```
 
-### 代码质量
-
-```bash
-# TypeScript 类型检查
-pnpm type-check
-
-# ESLint 代码检查
-pnpm lint
-
-# 构建项目
-pnpm build
+### 文章（写操作需 Admin 权限）
+```
+GET    /api/articles             # 文章列表（分页、筛选、搜索）
+GET    /api/articles/:id         # 单篇文章
+GET    /api/articles/:id/related # 相关文章
+POST   /api/articles             # 创建文章 🔒
+PUT    /api/articles/:id         # 更新文章 🔒
+DELETE /api/articles/:id         # 删除文章 🔒
 ```
 
-## 📊 项目统计
+### 评论
+```
+GET    /api/articles/:id/comments         # 获取评论（树形结构）
+POST   /api/articles/:id/comments         # 发表评论 🔒
+PUT    /api/articles/:id/comments/:cid    # 编辑评论 🔒
+DELETE /api/articles/:id/comments/:cid   # 删除评论 🔒
+```
 
-- **后端代码**: ~2000+ 行
-- **前端代码**: ~1500+ 行
-- **API 端点**: 20+ 个
-- **数据库模型**: 5 个
-- **React 组件**: 15+ 个
+### 管理员专用
+```
+GET    /api/admin/stats          # 统计数据 🔒
+GET    /api/admin/comments       # 所有评论（跨文章） 🔒
+DELETE /api/admin/comments/:id   # 删除任意评论 🔒
+```
 
-## 🎯 下一步
+### 文件上传
+```
+POST   /api/upload               # 上传图片
+DELETE /api/upload/:filename     # 删除图片
+```
 
-### 短期（1-2 周）
-- [ ] 部署后端到 Railway
-- [ ] 测试生产环境 API
-- [ ] 部署前端到 Vercel
+### SEO
+```
+GET    /sitemap.xml              # 站点地图
+```
 
-### 中期（1-2 个月）
-- [ ] 实现用户认证系统
-- [ ] 添加评论功能
-- [ ] 实现搜索功能
+> 🔒 需要在 Header 携带 `Authorization: Bearer <token>`
 
-### 长期（3-6 个月）
-- [ ] 性能优化
-- [ ] SEO 优化
-- [ ] 移动端适配
+## 🗃️ 数据库模型
 
-## 🤝 贡献
+| 模型 | 说明 |
+|------|------|
+| User | 管理员用户（含 name, bio, avatar） |
+| Article | 文章（category, tags, content HTML, published） |
+| Comment | 评论（支持 parentId 嵌套回复） |
+| Category | 分类 |
+| Tag | 标签 |
 
-欢迎提交 Issue 和 Pull Request！
+## 🔧 常用命令
+
+```bash
+pnpm dev              # 启动开发服务器
+pnpm build            # 构建所有包
+pnpm type-check       # TypeScript 类型检查
+pnpm db:push          # 推送 Schema 到数据库
+pnpm db:studio        # 打开 Prisma Studio（可视化数据库）
+pnpm --filter=backend db:init-admin   # 初始化管理员账号
+pnpm --filter=backend db:seed         # 写入测试数据
+```
+
+## 🚀 部署
+
+推荐免费组合：**Vercel（前端）+ Render（后端）+ Neon（数据库）**
+
+**前端 → Vercel**
+1. 连接 GitHub 仓库到 Vercel
+2. 设置环境变量 `VITE_API_URL=https://your-backend.onrender.com/api`
+3. 自动读取 `vercel.json` 构建
+
+**后端 → Render**
+1. 创建 Web Service，连接 GitHub 仓库
+2. Build Command: `pnpm install && pnpm build`
+3. Start Command: `cd apps/backend && pnpm start`
+4. 填入所有 `.env` 变量
 
 ## 📞 联系方式
 
 - **GitHub**: https://github.com/Hudson7777/personal-website
-- **Email**: hudson@example.com
-
-## 📄 许可证
-
-MIT License - 详见 [LICENSE](./LICENSE) 文件
