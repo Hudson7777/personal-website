@@ -1,4 +1,4 @@
-import { prisma } from '../index'
+import prisma from '../lib/prisma'
 import { CreateArticleInput, UpdateArticleInput, QueryArticlesInput } from '../schemas/articleSchema'
 import { NotFoundError } from '../utils/errors'
 

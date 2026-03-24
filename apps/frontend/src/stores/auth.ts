@@ -37,17 +37,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.message)
-      
-      set({ 
-        user: data.user, 
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-        isAdmin: true,
-      })
-      localStorage.setItem('accessToken', data.accessToken)
-      localStorage.setItem('refreshToken', data.refreshToken)
+      const res = await response.json()
+      if (!response.ok) throw new Error(res.message)
+
+      const { user, accessToken, refreshToken } = res.data
+      set({ user, accessToken, refreshToken, isAdmin: true })
+      localStorage.setItem('accessToken', accessToken)
+      localStorage.setItem('refreshToken', refreshToken)
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Login failed' })
       throw error
@@ -97,8 +93,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.message)
-      
-      get().setAccessToken(data.accessToken)
+
+      get().setAccessToken(data.data.accessToken)
     } catch (error) {
       console.error('Failed to refresh token:', error)
       get().logout()

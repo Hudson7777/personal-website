@@ -4,7 +4,7 @@
  */
 
 import api from '@/lib/api'
-import { Article, ArticleCategory, getArticlesByCategory, getArticleById, getLatestArticles, getRelatedArticles } from '@/data/mockArticles'
+import { Article, ArticleCategory, computeReadTime } from '@/data/mockArticles'
 
 interface ApiResponse<T> {
   success: boolean
@@ -20,134 +20,59 @@ interface PaginatedResponse<T> {
   totalPages: number
 }
 
+type CreateArticleData = Omit<Article, 'id' | 'createdAt' | 'updatedAt' | 'readTime' | 'commentCount'>
+type UpdateArticleData = Partial<Omit<Article, 'id' | 'createdAt' | 'updatedAt' | 'readTime' | 'commentCount'>>
+
 class ArticleService {
-  private baseUrl = '/api'
-  private useMockData = false // Set to true to fallback to mock data
+  private withReadTime(article: Article): Article {
+    return { ...article, readTime: computeReadTime(article.content || '') }
+  }
 
-  /**
-   * Get all articles
-   */
   async getAllArticles(): Promise<Article[]> {
-    try {
-      const response = await api.get<ApiResponse<PaginatedResponse<Article>>>(`${this.baseUrl}/articles`)
-      return response.data.data.items
-    } catch (error) {
-      console.error('Failed to fetch articles:', error)
-      if (this.useMockData) {
-        return getArticlesByCategory('ai' as ArticleCategory).concat(
-          getArticlesByCategory('travel' as ArticleCategory),
-          getArticlesByCategory('photography' as ArticleCategory),
-          getArticlesByCategory('history' as ArticleCategory)
-        )
-      }
-      throw error
-    }
+    const response = await api.get<ApiResponse<PaginatedResponse<Article>>>('/articles', {
+      params: { published: true, limit: 100 },
+    })
+    return response.data.data.items.map(a => this.withReadTime(a))
   }
 
-  /**
-   * Get articles by category
-   */
   async getArticlesByCategory(category: ArticleCategory): Promise<Article[]> {
-    try {
-      const response = await api.get<ApiResponse<PaginatedResponse<Article>>>(`${this.baseUrl}/articles`, {
-        params: { category, limit: 100 },
-      })
-      return response.data.data.items
-    } catch (error) {
-      console.error('Failed to fetch articles by category:', error)
-      if (this.useMockData) {
-        return getArticlesByCategory(category)
-      }
-      throw error
-    }
+    const response = await api.get<ApiResponse<PaginatedResponse<Article>>>('/articles', {
+      params: { category, published: true, limit: 100 },
+    })
+    return response.data.data.items.map(a => this.withReadTime(a))
   }
 
-  /**
-   * Get single article by ID
-   */
   async getArticleById(id: string): Promise<Article | null> {
-    try {
-      const response = await api.get<ApiResponse<Article>>(`${this.baseUrl}/articles/${id}`)
-      return response.data.data
-    } catch (error) {
-      console.error('Failed to fetch article:', error)
-      if (this.useMockData) {
-        return getArticleById(id) || null
-      }
-      throw error
-    }
+    const response = await api.get<ApiResponse<Article>>(`/articles/${id}`)
+    return this.withReadTime(response.data.data)
   }
 
-  /**
-   * Get latest articles
-   */
   async getLatestArticles(limit: number = 3): Promise<Article[]> {
-    try {
-      const response = await api.get<ApiResponse<PaginatedResponse<Article>>>(`${this.baseUrl}/articles`, {
-        params: { limit, sort: 'latest' },
-      })
-      return response.data.data.items
-    } catch (error) {
-      console.error('Failed to fetch latest articles:', error)
-      if (this.useMockData) {
-        return getLatestArticles(limit)
-      }
-      throw error
-    }
+    const response = await api.get<ApiResponse<PaginatedResponse<Article>>>('/articles', {
+      params: { limit, sort: 'latest', published: true },
+    })
+    return response.data.data.items.map(a => this.withReadTime(a))
   }
 
-  /**
-   * Get related articles
-   */
   async getRelatedArticles(articleId: string, limit: number = 3): Promise<Article[]> {
-    try {
-      const response = await api.get<ApiResponse<Article[]>>(`${this.baseUrl}/articles/${articleId}/related`, {
-        params: { limit },
-      })
-      return response.data.data
-    } catch (error) {
-      console.error('Failed to fetch related articles:', error)
-      if (this.useMockData) {
-        return getRelatedArticles(articleId, limit)
-      }
-      throw error
-    }
+    const response = await api.get<ApiResponse<Article[]>>(`/articles/${articleId}/related`, {
+      params: { limit },
+    })
+    return response.data.data.map(a => this.withReadTime(a))
   }
 
-  /**
-   * Create article (admin only)
-   */
-  async createArticle(_data: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>): Promise<Article> {
-    try {
-      throw new Error('Not implemented yet')
-    } catch (error) {
-      console.error('Failed to create article:', error)
-      throw error
-    }
+  async createArticle(data: CreateArticleData): Promise<Article> {
+    const response = await api.post<ApiResponse<Article>>('/articles', data)
+    return this.withReadTime(response.data.data)
   }
 
-  /**
-   * Update article (admin only)
-   */
-  async updateArticle(_id: string, _data: Partial<Article>): Promise<Article> {
-    try {
-      throw new Error('Not implemented yet')
-    } catch (error) {
-      console.error('Failed to update article:', error)
-      throw error
-    }
+  async updateArticle(id: string, data: UpdateArticleData): Promise<Article> {
+    const response = await api.put<ApiResponse<Article>>(`/articles/${id}`, data)
+    return this.withReadTime(response.data.data)
   }
 
-  /**
-   * Delete article (admin only)
-   */
-  async deleteArticle(_id: string): Promise<void> {
-    try {
-      throw new Error('Not implemented yet')
-    } catch (error) {
-      console.error('Failed to delete article:', error)
-      throw error
-    }
+  async deleteArticle(id: string): Promise<void> {
+    await api.delete(`/articles/${id}`)
   }
 }
 

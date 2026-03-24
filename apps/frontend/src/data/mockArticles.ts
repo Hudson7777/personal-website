@@ -8,18 +8,27 @@ export type ArticleCategory = 'ai' | 'travel' | 'photography' | 'history'
 export interface Article {
   id: string
   title: string
-  excerpt: string
+  excerpt?: string | null
   content: string
   category: ArticleCategory
   tags: string[]
-  coverImage: string
+  coverImage?: string | null
+  published?: boolean
   author: {
+    id?: string
     name: string
-    avatar: string
+    avatar?: string | null
   }
   createdAt: string
   updatedAt: string
-  readTime: number
+  readTime?: number
+  commentCount?: number
+}
+
+export const computeReadTime = (content: string): number => {
+  const text = content.replace(/<[^>]*>/g, '').replace(/[{}\[\]",:]/g, ' ')
+  const words = text.split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.ceil(words / 200))
 }
 
 export const mockArticles: Article[] = [

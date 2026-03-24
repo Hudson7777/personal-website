@@ -1,4 +1,4 @@
-import { prisma } from '../index'
+import prisma from '../lib/prisma'
 import { CreateTagInput, UpdateTagInput } from '../schemas/tagSchema'
 import { NotFoundError, ConflictError } from '../utils/errors'
 

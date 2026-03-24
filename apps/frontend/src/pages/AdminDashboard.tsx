@@ -21,19 +21,9 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
       try {
         setIsLoading(true)
-        // Fetch articles count
-        const articlesRes = await api.get('/articles?limit=1')
-        const articlesCount = articlesRes.data.data.total || 0
-
-        // Fetch categories count
-        const categoriesRes = await api.get('/categories')
-        const categoriesCount = categoriesRes.data.data.length || 0
-
-        setStats({
-          articles: articlesCount,
-          comments: 0, // Will be updated when comments API is ready
-          categories: categoriesCount,
-        })
+        const statsRes = await api.get('/admin/stats')
+        const { articleCount, commentCount, categoryCount } = statsRes.data.data
+        setStats({ articles: articleCount, comments: commentCount, categories: categoryCount })
       } catch (error) {
         console.error('Failed to fetch stats:', error)
       } finally {
@@ -73,20 +63,25 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="card-base p-6">
         <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Link to="/admin/articles/new">
+            <Button className="w-full">
+              ✏️ New Article
+            </Button>
+          </Link>
           <Link to="/admin/articles">
             <Button variant="secondary" className="w-full">
-              Manage Articles
+              📝 All Articles
             </Button>
           </Link>
           <Link to="/admin/comments">
             <Button variant="secondary" className="w-full">
-              View Comments
+              💬 Comments
             </Button>
           </Link>
-          <Link to="/">
+          <Link to="/" target="_blank">
             <Button variant="ghost" className="w-full">
-              View Website
+              🌐 View Site
             </Button>
           </Link>
         </div>

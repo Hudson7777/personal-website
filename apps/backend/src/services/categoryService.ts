@@ -1,4 +1,4 @@
-import { prisma } from '../index'
+import prisma from '../lib/prisma'
 import { CreateCategoryInput, UpdateCategoryInput } from '../schemas/categorySchema'
 import { NotFoundError, ConflictError } from '../utils/errors'
 

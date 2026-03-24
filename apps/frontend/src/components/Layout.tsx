@@ -1,20 +1,26 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import ScrollToTop from './ScrollToTop'
+import { useRevealAll } from '@/hooks/useScrollReveal'
 
 export default function Layout() {
   const location = useLocation()
+  const navigate  = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  useRevealAll()
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 10)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname])
 
   const navItems = [
     { path: '/', label: 'Home' },
@@ -25,9 +31,7 @@ export default function Layout() {
   ]
 
   const isActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/'
-    }
+    if (path === '/') return location.pathname === '/'
     return location.pathname.startsWith(path)
   }
 
@@ -38,39 +42,88 @@ export default function Layout() {
         className={cn(
           'sticky top-0 z-50 border-b border-border transition-all duration-base',
           isScrolled
-            ? 'bg-background/95 backdrop-blur-md shadow-lg'
-            : 'bg-background'
+            ? 'bg-[#F5F7F5]/92 backdrop-blur-md shadow-sm'
+            : 'bg-transparent'
         )}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link
               to="/"
-              className="text-2xl font-bold text-foreground hover:text-accent transition-colors duration-base"
+              className="text-xl font-bold text-foreground hover:text-accent transition-colors duration-base"
             >
               Personal
             </Link>
-            <div className="flex gap-8">
+
+            {/* Desktop nav */}
+            <div className="hidden md:flex gap-8">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    'text-sm font-medium transition-all duration-base relative',
+                    'nav-link-animated text-sm font-medium transition-colors duration-base',
                     isActive(item.path)
-                      ? 'text-accent'
+                      ? 'text-accent active'
                       : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {item.label}
-                  {isActive(item.path) && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full" />
+                </Link>
+              ))}
+            </div>
+
+            {/* Search icon */}
+            <button
+              onClick={() => navigate('/search')}
+              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              aria-label="Search"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+
+            {/* Mobile hamburger button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            >
+              {mobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-border bg-white/95 backdrop-blur-md animate-slide-down">
+            <div className="max-w-4xl mx-auto px-4 py-3 space-y-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    'block px-4 py-3 rounded-lg text-sm font-medium transition-colors',
+                    isActive(item.path)
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                   )}
+                >
+                  {item.label}
                 </Link>
               ))}
             </div>
           </div>
-        </div>
+        )}
       </nav>
 
       {/* Main Content */}
@@ -79,7 +132,7 @@ export default function Layout() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-card/50 backdrop-blur-sm mt-12">
+      <footer className="border-t border-border mt-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {/* About */}

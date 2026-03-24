@@ -6,44 +6,44 @@
  */
 
 export const colors = {
-  // Primary - Deep Blue
+  // Primary - Emerald Green palette
   primary: {
-    50: "#f0f9ff",
-    100: "#e0f2fe",
-    200: "#bae6fd",
-    300: "#7dd3fc",
-    400: "#38bdf8",
-    500: "#0ea5e9",
-    600: "#0284c7",
-    700: "#0369a1",
-    800: "#075985",
-    900: "#0c3d66",
+    50: "#F0FDF4",
+    100: "#DCFCE7",
+    200: "#BBF7D0",
+    300: "#86EFAC",
+    400: "#4ADE80",
+    500: "#22C55E",
+    600: "#16A34A",
+    700: "#15803D",
+    800: "#166534",
+    900: "#14532D",
   },
 
-  // Accent - Emerald Green
-  accent: "#10b981",
-  accentLight: "#d1fae5",
-  accentDark: "#059669",
+  // Accent - Emerald Green (light-theme variant)
+  accent: "#059669",
+  accentLight: "#D1FAE5",
+  accentDark: "#047857",
 
-  // Background
-  background: "#0f172a",
-  card: "#1e293b",
-  elevated: "#334155",
+  // Background - Light Theme
+  background: "#F8FAFC",
+  card: "#FFFFFF",
+  elevated: "#F1F5F9",
 
   // Text
-  foreground: "#f1f5f9",
-  muted: "#cbd5e1",
-  mutedDark: "#475569",
+  foreground: "#1E293B",
+  muted: "#64748B",
+  mutedLight: "#94A3B8",
 
   // Borders
-  border: "#334155",
-  borderLight: "#475569",
+  border: "#E2E8F0",
+  borderDark: "#CBD5E1",
 
   // Status
-  success: "#10b981",
-  warning: "#f59e0b",
-  error: "#ef4444",
-  info: "#3b82f6",
+  success: "#059669",
+  warning: "#D97706",
+  error: "#DC2626",
+  info: "#2563EB",
 } as const
 
 export const spacing = {
@@ -78,12 +78,13 @@ export const animations = {
 } as const
 
 export const shadows = {
-  sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-  base: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
-  md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-  lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-  xl: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-  accent: "0 0 20px rgba(16, 185, 129, 0.2)",
+  sm: "0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)",
+  base: "0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04)",
+  md: "0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04)",
+  lg: "0 8px 30px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05)",
+  xl: "0 16px 50px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.06)",
+  accent: "0 4px 20px rgba(5, 150, 105, 0.25)",
+  card: "0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.03)",
 } as const
 
 export const typography = {

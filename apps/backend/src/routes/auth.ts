@@ -1,19 +1,16 @@
 import { Router } from 'express'
 import { authController } from '../controllers/authController'
+import { authMiddleware } from '../middleware/auth'
 
 const router = Router()
 
-/**
- * 认证路由
- */
-
-// 登录
-router.post('/login', authController.login.bind(authController))
-
-// 刷新 Token
+// Public
+router.post('/login',   authController.login.bind(authController))
 router.post('/refresh', authController.refresh.bind(authController))
+router.post('/logout',  authController.logout.bind(authController))
 
-// 登出
-router.post('/logout', authController.logout.bind(authController))
+// Protected — require auth
+router.get('/me',          authMiddleware, authController.getMe.bind(authController))
+router.put('/profile',     authMiddleware, authController.updateProfile.bind(authController))
 
 export default router

@@ -23,14 +23,24 @@ const Section = React.forwardRef<HTMLElement, SectionProps>(
         {...props}
       >
         {(title || subtitle) && (
-          <div className="mb-8 sm:mb-12">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12">
             {title && (
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 animate-fade-in">
-                {title}
-              </h2>
+              <div className="reveal flex items-center gap-0 mb-1">
+                {/* Small sage square — slides in from left slightly before title */}
+                <span
+                  className="section-sq-mark reveal-left"
+                  style={{ transitionDelay: '0ms' }}
+                />
+                <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+                  {title}
+                </h2>
+              </div>
             )}
             {subtitle && (
-              <p className="text-lg text-muted-foreground animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <p
+                className="text-lg text-muted-foreground mt-3 reveal"
+                style={{ transitionDelay: '100ms' }}
+              >
                 {subtitle}
               </p>
             )}

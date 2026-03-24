@@ -1,9 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
+import rateLimit from 'express-rate-limit'
 import dotenv from 'dotenv'
 import path from 'path'
-import { PrismaClient } from '@prisma/client'
 import { sendError } from './utils/response'
+import prisma from './lib/prisma'
 import { AppError } from './utils/errors'
 import articlesRouter from './routes/articles'
 import authRouter from './routes/auth'
@@ -11,18 +13,46 @@ import categoriesRouter from './routes/categories'
 import tagsRouter from './routes/tags'
 import uploadRouter from './routes/upload'
 import seoRouter from './routes/seo'
+import adminRouter from './routes/admin'
 
 dotenv.config()
 
 const app = express()
-const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3001
 
-// Middleware
+// Security headers
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow serving uploaded images
+  contentSecurityPolicy: false, // Managed by frontend
+}))
+
+// CORS
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   credentials: true,
 }))
+
+// General rate limiter: 200 req/15min per IP
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many requests', message: 'Please try again later' },
+})
+
+// Strict limiter for auth endpoints: 10 req/15min per IP
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many requests', message: 'Too many login attempts, please try again later' },
+})
+
+app.use('/api/', generalLimiter)
+app.use('/api/auth/', authLimiter)
+
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
@@ -51,6 +81,7 @@ app.use('/api/articles', articlesRouter)
 app.use('/api/categories', categoriesRouter)
 app.use('/api/tags', tagsRouter)
 app.use('/api/upload', uploadRouter)
+app.use('/api/admin', adminRouter)
 app.use('/', seoRouter)
 
 // 404 handler
@@ -60,7 +91,12 @@ app.use((req: Request, res: Response) => {
 
 // Global error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('[Error]', err)
+  // Safe logging — avoid util.inspect crashing on complex Zod/Prisma error objects
+  try {
+    console.error('[Error]', err?.name, err?.message, err?.code, err?.errors?.[0])
+  } catch {
+    console.error('[Error] (could not format error)')
+  }
 
   // Handle Prisma errors
   if (err.code === 'P2025') {

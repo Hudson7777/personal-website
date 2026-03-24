@@ -14,7 +14,7 @@ export default function Home() {
   if (profileLoading) {
     return (
       <div className="animate-pulse">
-        <div className="h-80 bg-card" />
+        <div className="h-80 bg-muted" />
       </div>
     )
   }
@@ -33,15 +33,15 @@ export default function Home() {
     <div>
       <SEO
         title="Personal"
-        description="A personal website showcasing thoughts on AI, travel, photography, and history. Explore my journey and insights across multiple domains."
+        description="A personal website showcasing thoughts on AI, travel, photography, and history."
         url="/"
         type="website"
       />
 
-      {/* Hero Section */}
+      {/* Hero — gradient fades into unified page background, no dividers */}
       <Hero profile={profile} />
 
-      {/* Latest Articles Section */}
+      {/* Latest Articles */}
       <Section
         title="Latest Articles"
         subtitle="Explore my recent thoughts and insights"
@@ -52,33 +52,28 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* Interests Section */}
+      {/* Interests */}
       <Section
         title="Interests & Hobbies"
         subtitle="Discover what I'm passionate about"
         padding="lg"
-        className="bg-card/30"
       >
         <Container>
           <InterestsSection interests={interests} isLoading={profileLoading} />
         </Container>
       </Section>
 
-      {/* About Section */}
-      <Section
-        title="About Me"
-        subtitle="Get to know me better"
-        padding="lg"
-      >
+      {/* About Me */}
+      <Section title="About Me" padding="lg">
         <Container size="sm">
-          <div className="prose prose-invert max-w-none space-y-6 text-muted-foreground">
-            <p className="text-lg leading-relaxed animate-fade-in">
+          <div className="card-base p-8 sm:p-10 space-y-5 reveal" style={{ transitionDelay: '80ms' }}>
+            <p className="text-lg leading-relaxed text-muted-foreground">
               I'm passionate about exploring the intersection of technology and human experience. Through this website, I share my journey and insights across multiple domains.
             </p>
-            <p className="text-lg leading-relaxed animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <p className="text-lg leading-relaxed text-muted-foreground">
               Whether it's discussing the latest AI developments, sharing travel stories, showcasing photography, or exploring historical topics, I aim to provide thoughtful and engaging content that inspires and educates.
             </p>
-            <p className="text-lg leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <p className="text-lg leading-relaxed text-muted-foreground">
               Feel free to explore my content, connect with me on social media, or reach out if you'd like to collaborate or discuss any topics that interest you.
             </p>
           </div>

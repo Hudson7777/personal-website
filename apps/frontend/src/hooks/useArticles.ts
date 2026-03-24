@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Article, ArticleCategory, getArticlesByCategory, mockArticles } from '@/data/mockArticles'
+import { Article, ArticleCategory } from '@/data/mockArticles'
+import articleService from '@/services/articleService'
 
 interface UseArticlesOptions {
   category?: ArticleCategory
@@ -17,13 +18,11 @@ export const useArticles = (options?: UseArticlesOptions) => {
         setIsLoading(true)
         setError(null)
 
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 300))
-
-        let data = mockArticles
-
+        let data: Article[]
         if (options?.category) {
-          data = getArticlesByCategory(options.category)
+          data = await articleService.getArticlesByCategory(options.category)
+        } else {
+          data = await articleService.getAllArticles()
         }
 
         if (options?.limit) {

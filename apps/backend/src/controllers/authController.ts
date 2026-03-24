@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
 import bcryptjs from 'bcryptjs'
-import { PrismaClient } from '@prisma/client'
+import prisma from '../lib/prisma'
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt'
 import { sendSuccess, sendError } from '../utils/response'
-
-const prisma = new PrismaClient()
+import { AuthRequest } from '../middleware/auth'
 
 export class AuthController {
   /**
@@ -105,8 +104,55 @@ export class AuthController {
    */
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
-      // 前端负责删除 token，后端这里只是返回成功
       sendSuccess(res, {}, 'Logout successful', 200)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * 获取当前用户资料
+   * GET /api/auth/me
+   */
+  async getMe(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id
+      if (!userId) return sendError(res, 'Unauthorized', 'Not authenticated', 401)
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, email: true, name: true, bio: true, avatar: true, createdAt: true },
+      })
+
+      if (!user) return sendError(res, 'Not Found', 'User not found', 404)
+      sendSuccess(res, user, 'Profile retrieved')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * 更新当前用户资料
+   * PUT /api/auth/profile
+   */
+  async updateProfile(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id
+      if (!userId) return sendError(res, 'Unauthorized', 'Not authenticated', 401)
+
+      const { name, bio, avatar } = req.body
+
+      const updated = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          ...(name  !== undefined && { name }),
+          ...(bio   !== undefined && { bio }),
+          ...(avatar !== undefined && { avatar }),
+        },
+        select: { id: true, email: true, name: true, bio: true, avatar: true },
+      })
+
+      sendSuccess(res, updated, 'Profile updated')
     } catch (error) {
       next(error)
     }

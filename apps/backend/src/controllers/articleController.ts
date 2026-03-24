@@ -3,6 +3,7 @@ import { articleService } from '../services/articleService'
 import { createArticleSchema, updateArticleSchema, queryArticlesSchema } from '../schemas/articleSchema'
 import { sendSuccess, sendPaginated, sendError } from '../utils/response'
 import { ValidationError, NotFoundError } from '../utils/errors'
+import { AuthRequest } from '../middleware/auth'
 
 /**
  * 文章控制器
@@ -41,15 +42,10 @@ export class ArticleController {
    * 创建文章
    * POST /api/articles
    */
-  async createArticle(req: Request, res: Response, next: NextFunction) {
+  async createArticle(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      // 验证请求数据
       const data = createArticleSchema.parse(req.body)
-
-      // 这里应该从 JWT token 中获取 authorId，暂时使用硬编码
-      // TODO: 实现认证中间件
-      const authorId = req.body.authorId || 'default-user-id'
-
+      const authorId = req.user!.id
       const article = await articleService.createArticle(data, authorId)
       sendSuccess(res, article, 'Article created successfully', 201)
     } catch (error) {
@@ -61,7 +57,7 @@ export class ArticleController {
    * 更新文章
    * PUT /api/articles/:id
    */
-  async updateArticle(req: Request, res: Response, next: NextFunction) {
+  async updateArticle(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params
       const data = updateArticleSchema.parse(req.body)
@@ -77,7 +73,7 @@ export class ArticleController {
    * 删除文章
    * DELETE /api/articles/:id
    */
-  async deleteArticle(req: Request, res: Response, next: NextFunction) {
+  async deleteArticle(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params
       await articleService.deleteArticle(id)

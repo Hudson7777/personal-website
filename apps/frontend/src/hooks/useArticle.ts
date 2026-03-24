@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Article, getArticleById } from '@/data/mockArticles'
+import { Article } from '@/data/mockArticles'
+import articleService from '@/services/articleService'
 
 export const useArticle = (id: string | undefined) => {
   const [article, setArticle] = useState<Article | null>(null)
@@ -17,12 +18,7 @@ export const useArticle = (id: string | undefined) => {
       try {
         setIsLoading(true)
         setError(null)
-
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 300))
-
-        const data = getArticleById(id)
-
+        const data = await articleService.getArticleById(id)
         if (!data) {
           setError('Article not found')
           setArticle(null)
@@ -31,6 +27,7 @@ export const useArticle = (id: string | undefined) => {
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch article')
+        setArticle(null)
       } finally {
         setIsLoading(false)
       }

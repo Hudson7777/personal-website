@@ -1,6 +1,7 @@
+import prisma from '../lib/prisma'
 import { PrismaClient, Comment } from '@prisma/client'
 
-const prisma = new PrismaClient()
+
 
 export interface CommentWithAuthor extends Comment {
   author: {

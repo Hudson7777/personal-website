@@ -20,7 +20,7 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({
     return (
       <Grid cols={variant === 'list' ? 1 : 3}>
         {[1, 2, 3, 4, 5, 6].map(i => (
-          <div key={i} className="card-base h-64 animate-pulse" />
+          <div key={i} className="skeleton h-64" />
         ))}
       </Grid>
     )
@@ -40,8 +40,8 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({
         {articles.map((article, index) => (
           <div
             key={article.id}
-            className="animate-fade-in"
-            style={{ animationDelay: `${index * 0.05}s` }}
+            className="reveal"
+            style={{ transitionDelay: `${index * 60}ms` }}
           >
             <ArticleCard article={article} variant="list" />
           </div>
@@ -55,8 +55,8 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({
       {articles.map((article, index) => (
         <div
           key={article.id}
-          className="animate-fade-in"
-          style={{ animationDelay: `${index * 0.05}s` }}
+          className="reveal-scale"
+          style={{ transitionDelay: `${index * 60}ms` }}
         >
           <ArticleCard article={article} variant="grid" />
         </div>

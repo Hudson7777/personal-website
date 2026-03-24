@@ -13,6 +13,8 @@ import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminArticles from './pages/AdminArticles'
 import AdminComments from './pages/AdminComments'
+import AdminArticleEditor from './pages/AdminArticleEditor'
+import Search from './pages/Search'
 
 function App() {
   return (
@@ -22,6 +24,7 @@ function App() {
         {/* Public Routes */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/articles" element={<Articles />} />
           <Route path="/articles/:id" element={<ArticleDetail />} />
           <Route path="/travel" element={<Travel />} />
@@ -43,6 +46,8 @@ function App() {
         >
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/articles" element={<AdminArticles />} />
+          <Route path="/admin/articles/new" element={<AdminArticleEditor />} />
+          <Route path="/admin/articles/:id/edit" element={<AdminArticleEditor />} />
           <Route path="/admin/comments" element={<AdminComments />} />
         </Route>
       </Routes>

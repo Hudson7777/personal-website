@@ -1,7 +1,9 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import DOMPurify from 'dompurify'
 import { useArticle } from '@/hooks/useArticle'
-import { getRelatedArticles } from '@/data/mockArticles'
+import { Article } from '@/data/mockArticles'
+import articleService from '@/services/articleService'
 import { commentService, CommentTree } from '@/services/commentService'
 import Container from '@/components/Container'
 import Section from '@/components/Section'
@@ -18,7 +20,7 @@ export default function ArticleDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { article, isLoading, error } = useArticle(id)
-  const relatedArticles = article ? getRelatedArticles(article.id, 3) : []
+  const [relatedArticles, setRelatedArticles] = useState<Article[]>([])
 
   // Comments state
   const [comments, setComments] = useState<CommentTree[]>([])
@@ -33,6 +35,15 @@ export default function ArticleDetail() {
     photography: 'warning',
     history: 'error',
   }
+
+  // Load related articles
+  useEffect(() => {
+    if (article?.id) {
+      articleService.getRelatedArticles(article.id, 3)
+        .then(setRelatedArticles)
+        .catch(() => setRelatedArticles([]))
+    }
+  }, [article?.id])
 
   // Load comments
   useEffect(() => {
@@ -120,7 +131,7 @@ export default function ArticleDetail() {
       <SEO
         title={article.title}
         description={article.excerpt || article.content.substring(0, 160)}
-        image={article.coverImage}
+        image={article.coverImage ?? undefined}
         url={`/articles/${article.id}`}
         type="article"
         author={article.author.name}
@@ -130,12 +141,10 @@ export default function ArticleDetail() {
 
       {/* Cover Image */}
       <div
-        className="h-96 bg-cover bg-center relative"
-        style={{
-          backgroundImage: `url(${article.coverImage})`,
-        }}
+        className="h-96 bg-cover bg-center relative bg-card"
+        style={article.coverImage ? { backgroundImage: `url(${article.coverImage})` } : undefined}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-background/60" />
       </div>
 
       {/* Article Content */}
@@ -151,7 +160,9 @@ export default function ArticleDetail() {
                 >
                   {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
                 </Badge>
-                <span className="text-sm text-muted-foreground">{article.readTime} min read</span>
+                {article.readTime != null && (
+                  <span className="text-sm text-muted-foreground">{article.readTime} min read</span>
+                )}
               </div>
 
               <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
@@ -162,7 +173,7 @@ export default function ArticleDetail() {
               <div className="flex items-center justify-between py-6 border-t border-b border-border">
                 <div className="flex items-center gap-4">
                   <Avatar
-                    src={article.author.avatar}
+                    src={article.author.avatar ?? undefined}
                     alt={article.author.name}
                     size="lg"
                     fallback={article.author.name.charAt(0)}
@@ -182,10 +193,10 @@ export default function ArticleDetail() {
             </div>
 
             {/* Content */}
-            <div className="prose prose-invert max-w-none mb-12">
+            <div className="prose max-w-none mb-12">
               <div
-                className="text-muted-foreground leading-relaxed whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{ __html: article.content }}
+                className="text-foreground/80 leading-relaxed whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
               />
             </div>
 
