@@ -18,11 +18,12 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <Grid cols={variant === 'list' ? 1 : 3}>
-        {[1, 2, 3, 4, 5, 6].map(i => (
-          <div key={i} className="skeleton h-64" />
-        ))}
-      </Grid>
+      <div className="flex justify-center items-center py-24">
+        <div
+          className="w-6 h-6 rounded-full border-2 border-accent/30 border-t-accent animate-spin"
+          style={{ animationDuration: '1.2s' }}
+        />
+      </div>
     )
   }
 

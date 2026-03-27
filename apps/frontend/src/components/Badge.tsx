@@ -12,9 +12,9 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     const variants = {
       primary: 'bg-accent/10 text-accent border border-accent/20',
       secondary: 'bg-muted text-muted-foreground border border-border',
-      success: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-      warning: 'bg-amber-50 text-amber-700 border border-amber-200',
-      error: 'bg-red-50 text-red-700 border border-red-200',
+      success: 'bg-mist-100 text-mist-500 border border-mist-200',
+      warning: 'bg-apricot-100 text-apricot-400 border border-apricot-200',
+      error: 'bg-lavender-100 text-lavender-400 border border-lavender-200',
     }
 
     const sizes = {

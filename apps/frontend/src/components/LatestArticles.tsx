@@ -19,10 +19,11 @@ interface LatestArticlesProps {
 const LatestArticles: React.FC<LatestArticlesProps> = ({ articles, isLoading = false }) => {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="skeleton h-64" />
-        ))}
+      <div className="flex justify-center items-center py-24">
+        <div
+          className="w-6 h-6 rounded-full border-2 border-accent/30 border-t-accent animate-spin"
+          style={{ animationDuration: '1.2s' }}
+        />
       </div>
     )
   }

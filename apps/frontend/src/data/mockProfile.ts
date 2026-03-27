@@ -65,7 +65,7 @@ export const mockInterests: Interest[] = [
     title: 'AI Articles',
     description: 'Exploring artificial intelligence and machine learning',
     icon: '🤖',
-    color: 'from-blue-500 to-cyan-500',
+    color: 'from-mist-300 to-sage-400',
     slug: 'articles',
   },
   {
@@ -73,7 +73,7 @@ export const mockInterests: Interest[] = [
     title: 'Travel',
     description: 'Adventures and insights from around the world',
     icon: '✈️',
-    color: 'from-green-500 to-emerald-500',
+    color: 'from-mist-200 to-lavender-300',
     slug: 'travel',
   },
   {
@@ -81,7 +81,7 @@ export const mockInterests: Interest[] = [
     title: 'Photography',
     description: 'Visual stories and photography techniques',
     icon: '📸',
-    color: 'from-purple-500 to-pink-500',
+    color: 'from-lavender-200 to-apricot-300',
     slug: 'photography',
   },
   {
@@ -89,7 +89,7 @@ export const mockInterests: Interest[] = [
     title: 'History',
     description: 'Historical insights and perspectives',
     icon: '📚',
-    color: 'from-amber-500 to-orange-500',
+    color: 'from-apricot-200 to-sage-300',
     slug: 'history',
   },
 ]
