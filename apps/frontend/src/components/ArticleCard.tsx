@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Article } from '@/data/mockArticles'
 import Card, { CardBody } from './Card'
-import Badge from './Badge'
+import Badge, { BadgeVariant } from './Badge'
 import Avatar from './Avatar'
 
 interface ArticleCardProps {
@@ -10,7 +10,7 @@ interface ArticleCardProps {
   variant?: 'grid' | 'list'
 }
 
-const categoryBadgeVariant: Record<string, string> = {
+const categoryBadgeVariant: Record<string, BadgeVariant> = {
   ai:          'primary',
   travel:      'success',
   photography: 'warning',
@@ -23,10 +23,8 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'grid' }) 
   if (variant === 'list') {
     return (
       <Link to={`/articles/${article.id}`} className="group">
-        {/* card-left-bar: sage line slides from 0 → 100% on hover */}
         <Card hoverable className="overflow-hidden card-left-bar">
           <div className="flex gap-6 p-6">
-            {/* Cover Image */}
             <div className="flex-shrink-0 w-32 h-32 rounded-lg overflow-hidden bg-muted">
               {article.coverImage && (
                 <img
@@ -38,10 +36,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'grid' }) 
               )}
             </div>
 
-            {/* Content */}
             <CardBody className="flex-1 p-0">
               <div className="flex items-start justify-between mb-2">
-                <Badge variant={badgeVariant as any} size="sm">
+                <Badge variant={badgeVariant} size="sm">
                   {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
                 </Badge>
                 {article.readTime != null && (
@@ -78,12 +75,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'grid' }) 
     )
   }
 
-  // Grid variant
   return (
     <Link to={`/articles/${article.id}`} className="group">
-      {/* card-left-bar: sage line slides from 0 → 100% on hover */}
       <Card hoverable className="h-full flex flex-col overflow-hidden card-left-bar">
-        {/* Cover Image */}
         <div className="relative h-48 overflow-hidden bg-muted">
           {article.coverImage && (
             <img
@@ -93,14 +87,12 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'grid' }) 
               loading="lazy"
             />
           )}
-          {/* Subtle bottom-fade for legibility */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </div>
 
-        {/* Content */}
         <CardBody className="flex-1 flex flex-col">
           <div className="mb-3">
-            <Badge variant={badgeVariant as any} size="sm">
+            <Badge variant={badgeVariant} size="sm">
               {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
             </Badge>
           </div>

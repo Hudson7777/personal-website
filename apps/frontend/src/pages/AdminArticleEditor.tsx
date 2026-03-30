@@ -184,8 +184,10 @@ export default function AdminArticleEditor() {
 
     try {
       if (isEditing && id) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await articleService.updateArticle(id, payload as any)
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await articleService.createArticle(payload as any)
       }
       navigate('/admin/articles')

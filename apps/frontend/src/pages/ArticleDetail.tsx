@@ -8,7 +8,7 @@ import { commentService, CommentTree } from '@/services/commentService'
 import Container from '@/components/Container'
 import Section from '@/components/Section'
 import Avatar from '@/components/Avatar'
-import Badge from '@/components/Badge'
+import Badge, { BadgeVariant } from '@/components/Badge'
 import ArticleGrid from '@/components/ArticleGrid'
 import Button from '@/components/Button'
 import CommentList from '@/components/CommentList'
@@ -29,7 +29,7 @@ export default function ArticleDetail() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingContent, setEditingContent] = useState('')
 
-  const categoryColors: Record<string, string> = {
+  const categoryColors: Record<string, BadgeVariant> = {
     ai: 'primary',
     travel: 'success',
     photography: 'warning',
@@ -155,7 +155,7 @@ export default function ArticleDetail() {
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
                 <Badge
-                  variant={categoryColors[article.category] as any}
+                  variant={categoryColors[article.category]}
                   size="md"
                 >
                   {article.category.charAt(0).toUpperCase() + article.category.slice(1)}

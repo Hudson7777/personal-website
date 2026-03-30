@@ -1,15 +1,17 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 
+export type BadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error'
+
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error'
+  variant?: BadgeVariant
   size?: 'sm' | 'md'
   children: React.ReactNode
 }
 
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = 'primary', size = 'md', children, ...props }, ref) => {
-    const variants = {
+    const variants: Record<BadgeVariant, string> = {
       primary: 'bg-accent/10 text-accent border border-accent/20',
       secondary: 'bg-muted text-muted-foreground border border-border',
       success: 'bg-mist-100 text-mist-500 border border-mist-200',
