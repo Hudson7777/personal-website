@@ -193,12 +193,18 @@ export default function ArticleDetail() {
             </div>
 
             {/* Content */}
-            <div className="prose max-w-none mb-12">
-              <div
-                className="text-foreground/80 leading-relaxed whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
-              />
-            </div>
+            <div
+              className="prose prose-sage max-w-none mb-12
+                         prose-headings:text-foreground prose-headings:font-semibold
+                         prose-p:text-foreground/80 prose-p:leading-relaxed
+                         prose-a:text-accent prose-a:no-underline hover:prose-a:underline
+                         prose-strong:text-foreground
+                         prose-code:text-accent prose-code:bg-muted prose-code:px-1 prose-code:rounded
+                         prose-pre:bg-sage-900 prose-pre:text-sage-50
+                         prose-blockquote:border-l-accent prose-blockquote:text-muted-foreground
+                         prose-img:rounded-xl prose-img:shadow-md"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
+            />
 
             {/* Tags */}
             {article.tags.length > 0 && (

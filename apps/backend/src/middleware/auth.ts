@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+import { sendError } from '../utils/response'
 
 export interface AuthRequest extends Request {
   user?: {
@@ -12,7 +13,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
   const token = req.headers.authorization?.split(' ')[1]
 
   if (!token) {
-    return res.status(401).json({ message: 'No token provided' })
+    return sendError(res, 'Unauthorized', 'No token provided', 401)
   }
 
   try {
@@ -20,20 +21,18 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     req.user = decoded as any
     return next()
   } catch (error) {
-    return res.status(401).json({ message: 'Invalid token' })
+    return sendError(res, 'Unauthorized', 'Invalid token', 401)
   }
 }
 
 export const adminMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
-  // First check if user is authenticated
   if (!req.user) {
-    return res.status(401).json({ message: 'No token provided' })
+    return sendError(res, 'Unauthorized', 'No token provided', 401)
   }
 
-  // Check if user email is in admin list
   const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(email => email.trim())
   if (!adminEmails.includes(req.user.email)) {
-    return res.status(403).json({ message: 'Admin access required' })
+    return sendError(res, 'Forbidden', 'Admin access required', 403)
   }
 
   return next()

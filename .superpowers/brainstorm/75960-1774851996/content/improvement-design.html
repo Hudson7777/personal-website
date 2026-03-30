@@ -1,0 +1,102 @@
+<h2>改进方案设计</h2>
+<p class="subtitle">12项改进 · 分为6个任务组 · 面向长期可维护性</p>
+
+<!-- TASK GROUP 1 -->
+<div class="section">
+  <h3 style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span style="background:#dc3545;color:white;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">1</span>
+    删除孤立文件 styles/theme.ts
+  </h3>
+  <div style="background:#fff8f0;border:1px solid #f0d090;border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:#4a3000">
+    <strong>问题：</strong>该文件定义了一套完全不同的颜色系统（Emerald Green），从未被任何文件 import，与 Tailwind 配置中的 Monet 主题完全割裂，是认知噪音。<br>
+    <strong>操作：</strong>直接删除 <code>apps/frontend/src/styles/theme.ts</code>。无副作用。
+  </div>
+</div>
+
+<!-- TASK GROUP 2 -->
+<div class="section">
+  <h3 style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span style="background:#dc3545;color:white;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</span>
+    合并三个重复页面 → CategoryPage 通用组件
+  </h3>
+  <div style="background:#fff8f0;border:1px solid #f0d090;border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:#4a3000">
+    <strong>问题：</strong>Travel / Photography / History 三个页面代码完全相同，只有 category 字符串不同。<br>
+    <strong>方案：</strong>创建 <code>pages/CategoryPage.tsx</code>，接受 <code>category</code>、<code>title</code>、<code>subtitle</code>、<code>description</code>、<code>emptyMessage</code> props。<br>
+    Travel/Photography/History 各保留一行：<code>return &lt;CategoryPage category="travel" title="Travel" .../&gt;</code><br>
+    <strong>App.tsx 不变</strong>，路由结构保持不动。
+  </div>
+</div>
+
+<!-- TASK GROUP 3 -->
+<div class="section">
+  <h3 style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span style="background:#dc3545;color:white;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">3</span>
+    删除 LatestArticles，统一用 ArticleGrid
+  </h3>
+  <div style="background:#fff8f0;border:1px solid #f0d090;border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:#4a3000">
+    <strong>问题：</strong>LatestArticles 与 ArticleGrid + ArticleCard 功能完全重叠，前者是后者的手写复制版本。<br>
+    <strong>方案：</strong>在 Home.tsx 中将 <code>&lt;LatestArticles&gt;</code> 替换为 <code>&lt;ArticleGrid&gt;</code>，然后删除 <code>LatestArticles.tsx</code>。<br>
+    <strong>注意：</strong>ArticleCard 已有 cover image、badge、excerpt、readTime，视觉效果与 LatestArticles 一致。
+  </div>
+</div>
+
+<!-- TASK GROUP 4 -->
+<div class="section">
+  <h3 style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span style="background:#1060a0;color:white;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">4</span>
+    修复类型安全：消除 as any，统一 BadgeVariant 类型
+  </h3>
+  <div style="background:#f0f8ff;border:1px solid #90c0e0;border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:#002050">
+    <strong>根本原因：</strong>Badge 的 variant 类型是字面量联合 <code>'primary' | 'secondary' | 'success' | 'warning' | 'error'</code>，但调用方用 Record&lt;string, string&gt; 映射后变成了 string，需要 as any 转义。<br>
+    <strong>方案：</strong>
+    <ol style="margin:8px 0;padding-left:18px">
+      <li>在 Badge.tsx 中 export <code>type BadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error'</code></li>
+      <li>将各处的 <code>Record&lt;string, string&gt;</code> 改为 <code>Record&lt;string, BadgeVariant&gt;</code></li>
+      <li>ArticleCard、LatestArticles（删除前）、ArticleDetail 中的 as any 全部消除</li>
+      <li>AdminArticleEditor 中的 <code>payload as any</code> 改为正确的 CreateArticleInput / UpdateArticleInput 类型</li>
+    </ol>
+  </div>
+</div>
+
+<!-- TASK GROUP 5 -->
+<div class="section">
+  <h3 style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span style="background:#1060a0;color:white;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">5</span>
+    添加 Toast 通知系统（Zustand + ToastContainer）
+  </h3>
+  <div style="background:#f0f8ff;border:1px solid #90c0e0;border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:#002050">
+    <strong>新增文件：</strong>
+    <ul style="margin:8px 0;padding-left:18px">
+      <li><code>stores/toast.ts</code> — Zustand store，管理 toast 队列（id, message, type, duration）</li>
+      <li><code>components/ToastContainer.tsx</code> — 渲染 toast 列表，固定在右下角，带入场/出场动画</li>
+      <li><code>hooks/useToast.ts</code> — 便捷 hook，暴露 <code>toast.success()</code>、<code>toast.error()</code>、<code>toast.info()</code></li>
+    </ul>
+    <strong>集成：</strong>在 Layout.tsx 中挂载 &lt;ToastContainer /&gt;。在 Admin 页面的保存/删除操作成功/失败时调用 useToast。<br>
+    <strong>样式：</strong>Monet sage 主题，success=sage绿，error=lavender红，info=mist蓝。
+  </div>
+</div>
+
+<!-- TASK GROUP 6 -->
+<div class="section">
+  <h3 style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span style="background:#1060a0;color:white;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">6</span>
+    添加 ErrorBoundary + 404 NotFound 页面
+  </h3>
+  <div style="background:#f0f8ff;border:1px solid #90c0e0;border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:#002050">
+    <strong>新增文件：</strong>
+    <ul style="margin:8px 0;padding-left:18px">
+      <li><code>components/ErrorBoundary.tsx</code> — React class component，捕获渲染错误，显示友好错误页面（Monet 风格）</li>
+      <li><code>pages/NotFound.tsx</code> — 404 页面，带"回到首页"按钮</li>
+    </ul>
+    <strong>集成：</strong>
+    <ul style="margin:8px 0;padding-left:18px">
+      <li>在 App.tsx 的 &lt;Router&gt; 外层包裹 &lt;ErrorBoundary&gt;</li>
+      <li>在 Routes 末尾添加 <code>&lt;Route path="*" element={&lt;NotFound /&gt;} /&gt;</code></li>
+    </ul>
+  </div>
+</div>
+
+<div style="background:rgba(139,168,136,0.1);border:1px solid rgba(139,168,136,0.25);border-radius:10px;padding:14px;margin-top:8px;font-size:13px;color:#4a5e4c">
+  <strong>总计：</strong>新增 5 个文件，修改约 12 个文件，删除 2 个文件（theme.ts、LatestArticles.tsx）。<br>
+  以上设计方案是否符合你的预期？确认后进入 writing-plans 生成实施计划。
+</div>

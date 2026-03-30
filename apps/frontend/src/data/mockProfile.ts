@@ -19,33 +19,28 @@ export interface Profile {
 }
 
 export const mockProfile: Profile = {
-  name: 'Hudson',
-  title: 'Full Stack Developer & Content Creator',
-  bio: 'Passionate about exploring the intersection of technology and human experience. I share insights on AI, travel, photography, and history.',
-  avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+  name: '浩然',
+  title: 'Fullstack Software Engineer',
+  bio: '本科计算机视觉，研究生人机交互，入职后前端转数据，被动实现了全栈梦想。对AI保持持续的热情，热爱历史人文、solo旅行、摄影和研究股市。',
+  avatar: '/avatar.png',
   backgroundImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop',
-  email: 'hello@example.com',
-  location: 'San Francisco, CA',
+  email: 'haoran7.xu@gmail.com',
+  location: 'Beijing, China',
   socialLinks: [
     {
       name: 'GitHub',
-      url: 'https://github.com',
+      url: 'https://github.com/Hudson7777',
       icon: 'github',
     },
     {
-      name: 'Twitter',
-      url: 'https://twitter.com',
-      icon: 'twitter',
-    },
-    {
-      name: 'LinkedIn',
-      url: 'https://linkedin.com',
-      icon: 'linkedin',
-    },
-    {
       name: 'Email',
-      url: 'mailto:hello@example.com',
+      url: 'mailto:haoran7.xu@gmail.com',
       icon: 'email',
+    },
+    {
+      name: 'WeChat',
+      url: 'weixin://Simple4Me',
+      icon: 'wechat',
     },
   ],
 }

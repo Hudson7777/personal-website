@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
 
 export interface SocialLink {
@@ -19,23 +19,81 @@ const SocialLinks: React.FC<SocialLinksProps> = ({
   className,
   iconClassName = 'w-6 h-6',
 }) => {
+  const [wechatOpen, setWechatOpen] = useState(false)
+  const wechatRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!wechatOpen) return
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setWechatOpen(false)
+    }
+    const handleClick = (e: MouseEvent) => {
+      if (wechatRef.current && !wechatRef.current.contains(e.target as Node)) {
+        setWechatOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handleKey)
+    document.addEventListener('mousedown', handleClick)
+    return () => {
+      document.removeEventListener('keydown', handleKey)
+      document.removeEventListener('mousedown', handleClick)
+    }
+  }, [wechatOpen])
+
   return (
     <div className={cn('flex items-center gap-4', className)}>
-      {links.map((link) => (
-        <a
-          key={link.name}
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={link.label || link.name}
-          className="text-muted-foreground hover:text-accent transition-colors duration-base hover-lift"
-          title={link.name}
-        >
-          <div className={iconClassName}>
-            {link.icon}
-          </div>
-        </a>
-      ))}
+      {links.map((link) => {
+        if (link.name === 'WeChat') {
+          return (
+            <div key={link.name} className="relative" ref={wechatRef}>
+              <button
+                onClick={() => setWechatOpen(prev => !prev)}
+                aria-label="WeChat"
+                title="WeChat: Simple4Me"
+                className="text-muted-foreground hover:text-accent transition-colors duration-base hover-lift"
+              >
+                <div className={iconClassName}>
+                  {link.icon}
+                </div>
+              </button>
+
+              {wechatOpen && (
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-50
+                                bg-white rounded-2xl shadow-lg border border-border p-4
+                                flex flex-col items-center gap-2 w-44">
+                  {/* Arrow pointing down */}
+                  <div className="absolute -bottom-[9px] left-1/2 -translate-x-1/2
+                                  w-4 h-4 bg-white border-r border-b border-border rotate-45" />
+                  <img
+                    src="/wechat-qr.png"
+                    alt="WeChat QR Code"
+                    className="w-32 h-32 rounded-lg object-cover"
+                  />
+                  <p className="text-xs text-muted-foreground font-medium tracking-wide">
+                    Simple4Me
+                  </p>
+                </div>
+              )}
+            </div>
+          )
+        }
+
+        return (
+          <a
+            key={link.name}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={link.label || link.name}
+            className="text-muted-foreground hover:text-accent transition-colors duration-base hover-lift"
+            title={link.name}
+          >
+            <div className={iconClassName}>
+              {link.icon}
+            </div>
+          </a>
+        )
+      })}
     </div>
   )
 }
@@ -61,6 +119,11 @@ export const socialIcons = {
   email: (
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+  ),
+  wechat: (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.295.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-3.898-6.348-7.601-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-7.062-6.122zm-3.74 2.633c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm5.4 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982z"/>
     </svg>
   ),
   instagram: (

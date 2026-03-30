@@ -182,24 +182,24 @@
   .reveal {
     opacity: 0;
     transform: translateY(22px);
-    transition: opacity 2s cubic-bezier(0.4,0,0.2,1),
-                transform 2s cubic-bezier(0.4,0,0.2,1);
+    transition: opacity 1.2s cubic-bezier(0.4,0,0.2,1),
+                transform 1.2s cubic-bezier(0.4,0,0.2,1);
   }
   .reveal.revealed { opacity: 1; transform: translateY(0); }
 
   .reveal-left {
     opacity: 0;
     transform: translateX(-22px);
-    transition: opacity 1.75s cubic-bezier(0.4,0,0.2,1),
-                transform 1.75s cubic-bezier(0.4,0,0.2,1);
+    transition: opacity 1.2s cubic-bezier(0.4,0,0.2,1),
+                transform 1.2s cubic-bezier(0.4,0,0.2,1);
   }
   .reveal-left.revealed { opacity: 1; transform: translateX(0); }
 
   .reveal-scale {
     opacity: 0;
     transform: scale(0.95) translateY(14px);
-    transition: opacity 1.75s cubic-bezier(0.4,0,0.2,1),
-                transform 1.75s cubic-bezier(0.4,0,0.2,1);
+    transition: opacity 1.2s cubic-bezier(0.4,0,0.2,1),
+                transform 1.2s cubic-bezier(0.4,0,0.2,1);
   }
   .reveal-scale.revealed { opacity: 1; transform: scale(1) translateY(0); }
 

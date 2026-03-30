@@ -28,16 +28,16 @@ class ArticleService {
     return { ...article, readTime: computeReadTime(article.content || '') }
   }
 
-  async getAllArticles(): Promise<Article[]> {
+  async getAllArticles(limit?: number): Promise<Article[]> {
     const response = await api.get<ApiResponse<PaginatedResponse<Article>>>('/articles', {
-      params: { published: true, limit: 100 },
+      params: { published: true, limit: limit ?? 100 },
     })
     return response.data.data.items.map(a => this.withReadTime(a))
   }
 
-  async getArticlesByCategory(category: ArticleCategory): Promise<Article[]> {
+  async getArticlesByCategory(category: ArticleCategory, limit?: number): Promise<Article[]> {
     const response = await api.get<ApiResponse<PaginatedResponse<Article>>>('/articles', {
-      params: { category, published: true, limit: 100 },
+      params: { category, published: true, limit: limit ?? 100 },
     })
     return response.data.data.items.map(a => this.withReadTime(a))
   }

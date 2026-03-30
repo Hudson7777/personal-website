@@ -19,10 +19,6 @@ export const useProfile = (): UseProfileReturn => {
       try {
         setIsLoading(true)
         setError(null)
-
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 300))
-
         setProfile(mockProfile)
         setInterests(mockInterests)
       } catch (err) {

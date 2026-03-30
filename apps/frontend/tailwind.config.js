@@ -79,12 +79,12 @@ export default {
         "2xl": "1.25rem",
       },
       animation: {
-        "fade-in":       "fadeIn 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
-        "slide-up":      "slideUp 1.75s cubic-bezier(0.4, 0, 0.2, 1)",
-        "slide-down":    "slideDown 1.25s cubic-bezier(0.4, 0, 0.2, 1)",
-        "slide-in-left": "slideInLeft 1.25s cubic-bezier(0.4, 0, 0.2, 1)",
-        "scale-in":      "scaleIn 1.25s cubic-bezier(0.4, 0, 0.2, 1)",
-        "bounce-in":     "bounceIn 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "fade-in":       "fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1)",
+        "slide-up":      "slideUp 1s cubic-bezier(0.4, 0, 0.2, 1)",
+        "slide-down":    "slideDown 1s cubic-bezier(0.4, 0, 0.2, 1)",
+        "slide-in-left": "slideInLeft 1s cubic-bezier(0.4, 0, 0.2, 1)",
+        "scale-in":      "scaleIn 1s cubic-bezier(0.4, 0, 0.2, 1)",
+        "bounce-in":     "bounceIn 1s cubic-bezier(0.34, 1.56, 0.64, 1)",
         "float":         "float 5s ease-in-out infinite",
         "shimmer":       "shimmer 2s linear infinite",
         "glow-pulse":    "glowPulse 3s ease-in-out infinite",
@@ -162,5 +162,7 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+  require('@tailwindcss/typography'),
+],
 }

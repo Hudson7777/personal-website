@@ -20,13 +20,9 @@ export const useArticles = (options?: UseArticlesOptions) => {
 
         let data: Article[]
         if (options?.category) {
-          data = await articleService.getArticlesByCategory(options.category)
+          data = await articleService.getArticlesByCategory(options.category, options.limit)
         } else {
-          data = await articleService.getAllArticles()
-        }
-
-        if (options?.limit) {
-          data = data.slice(0, options.limit)
+          data = await articleService.getAllArticles(options?.limit)
         }
 
         setArticles(data)
