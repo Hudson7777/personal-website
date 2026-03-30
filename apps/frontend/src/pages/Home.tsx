@@ -3,7 +3,7 @@ import { useArticles } from '@/hooks/useArticles'
 import Hero from '@/components/Hero'
 import Section from '@/components/Section'
 import Container from '@/components/Container'
-import LatestArticles from '@/components/LatestArticles'
+import ArticleGrid from '@/components/ArticleGrid'
 import InterestsSection from '@/components/InterestsSection'
 import SEO from '@/components/SEO'
 
@@ -48,7 +48,7 @@ export default function Home() {
         padding="lg"
       >
         <Container>
-          <LatestArticles articles={articles} isLoading={articlesLoading} />
+          <ArticleGrid articles={articles} isLoading={articlesLoading} />
         </Container>
       </Section>
 
