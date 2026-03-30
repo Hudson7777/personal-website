@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '@/lib/api'
 import Button from '@/components/Button'
+import { useToast } from '@/hooks/useToast'
 
 interface Article {
   id: string
@@ -15,7 +16,7 @@ interface Article {
 export default function AdminArticles() {
   const [articles, setArticles] = useState<Article[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState('')
+  const toast = useToast()
 
   useEffect(() => {
     fetchArticles()
@@ -24,11 +25,10 @@ export default function AdminArticles() {
   const fetchArticles = async () => {
     try {
       setIsLoading(true)
-      setError('')
       const response = await api.get('/articles?limit=100')
       setArticles(response.data.data.items || [])
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch articles')
+      toast.error(err instanceof Error ? err.message : 'Failed to fetch articles')
     } finally {
       setIsLoading(false)
     }
@@ -36,12 +36,12 @@ export default function AdminArticles() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this article?')) return
-
     try {
       await api.delete(`/articles/${id}`)
       setArticles(articles.filter(a => a.id !== id))
+      toast.success('Article deleted successfully')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete article')
+      toast.error(err instanceof Error ? err.message : 'Failed to delete article')
     }
   }
 
@@ -49,8 +49,9 @@ export default function AdminArticles() {
     try {
       await api.put(`/articles/${id}`, { published: !published })
       setArticles(articles.map(a => (a.id === id ? { ...a, published: !published } : a)))
+      toast.success(published ? 'Article unpublished' : 'Article published')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update article')
+      toast.error(err instanceof Error ? err.message : 'Failed to update article')
     }
   }
 
@@ -72,12 +73,6 @@ export default function AdminArticles() {
           <Button>Create Article</Button>
         </Link>
       </div>
-
-      {error && (
-        <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600">
-          {error}
-        </div>
-      )}
 
       {isLoading ? (
         <div className="space-y-4">

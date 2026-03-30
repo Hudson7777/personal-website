@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import ScrollToTop from './ScrollToTop'
 import { useRevealAll } from '@/hooks/useScrollReveal'
+import ToastContainer from './ToastContainer'
 
 export default function Layout() {
   const location = useLocation()
@@ -177,6 +178,7 @@ export default function Layout() {
 
       {/* Scroll to Top Button */}
       <ScrollToTop threshold={300} />
+      <ToastContainer />
     </div>
   )
 }

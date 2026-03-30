@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '@/lib/api'
+import { useToast } from '@/hooks/useToast'
 
 interface AdminComment {
   id: string
@@ -14,9 +15,9 @@ interface AdminComment {
 export default function AdminComments() {
   const [comments,   setComments]   = useState<AdminComment[]>([])
   const [isLoading,  setIsLoading]  = useState(true)
-  const [error,      setError]      = useState('')
   const [page,       setPage]       = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const toast = useToast()
 
   useEffect(() => {
     fetchComments(page)
@@ -25,12 +26,11 @@ export default function AdminComments() {
   const fetchComments = async (p: number) => {
     try {
       setIsLoading(true)
-      setError('')
       const res = await api.get(`/admin/comments?page=${p}&limit=20`)
       setComments(res.data.data.items || [])
       setTotalPages(res.data.data.totalPages || 1)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch comments')
+      toast.error(err instanceof Error ? err.message : 'Failed to fetch comments')
     } finally {
       setIsLoading(false)
     }
@@ -41,8 +41,9 @@ export default function AdminComments() {
     try {
       await api.delete(`/admin/comments/${id}`)
       setComments(prev => prev.filter(c => c.id !== id))
+      toast.success('Comment deleted')
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Delete failed')
+      toast.error(err instanceof Error ? err.message : 'Delete failed')
     }
   }
 
@@ -61,12 +62,6 @@ export default function AdminComments() {
           <p className="text-muted-foreground text-sm">Moderate and manage reader comments</p>
         </div>
       </div>
-
-      {error && (
-        <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-          {error}
-        </div>
-      )}
 
       {isLoading ? (
         <div className="space-y-3">

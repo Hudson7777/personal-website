@@ -8,6 +8,7 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { common, createLowlight } from 'lowlight'
 import api from '@/lib/api'
 import articleService from '@/services/articleService'
+import { useToast } from '@/hooks/useToast'
 import { ArticleCategory } from '@/data/mockArticles'
 import Button from '@/components/Button'
 
@@ -81,6 +82,7 @@ export default function AdminArticleEditor() {
   const [isSaving,    setIsSaving]    = useState(false)
   const [isLoading,   setIsLoading]   = useState(isEditing)
   const [error,       setError]       = useState('')
+  const toast = useToast()
   const [imageUploading, setImageUploading] = useState(false)
 
   // ─── TipTap editor ─────────────────────────────────────────────
@@ -190,9 +192,12 @@ export default function AdminArticleEditor() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await articleService.createArticle(payload as any)
       }
+      toast.success(isEditing ? 'Article updated successfully' : 'Article created successfully')
       navigate('/admin/articles')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Save failed')
+      const message = err instanceof Error ? err.message : 'Save failed'
+      setError(message)
+      toast.error(message)
     } finally {
       setIsSaving(false)
     }
